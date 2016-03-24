@@ -17,23 +17,39 @@ class View extends \yii\base\View
      */
     public $db = 'db';
 
+    /**
+     * @var string table name in database
+     */
     public $viewTable = 'views';
 
+    /**
+     * @var string folder to put generated templates in
+     */
     public $runtime = '@runtime/sqlRenderer';
 
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         parent::init();
         $this->db = Instance::ensure($this->db, 'yii\db\Connection');
     }
 
-    protected function findViewRow($view, $context)
+    /**
+     * Finds the view file based on the given view name.
+     * @param string $view the view name or the path alias of the view file. Please refer to [[render()]]
+     * on how to specify this parameter.
+     * @return array the view array
+     */
+    protected function findViewRow(string $view)
     {
         $query = (new Query())->select('*')->from($this->viewTable)->where('slug = :slug', ['slug' => $view])->one($this->db);
         return $query;
     }
+
     /**
-     * Finds the view file based on the given view name.
+     * Finds the view file based on the given view name. If it does not exist, create one
      * @param string $view the view name or the path alias of the view file. Please refer to [[render()]]
      * on how to specify this parameter.
      * @param object $context the context to be assigned to the view and can later be accessed via [[context]]
@@ -69,6 +85,12 @@ class View extends \yii\base\View
         return parent::findViewFile($viewFile, $context);
     }
 
+    /**
+     * generates file name for template slug and sha
+     * @param  string $slug template slug
+     * @param  string $sha  content hash
+     * @return string       file alias
+     */
     public function generateFileName($slug, $sha)
     {
         $ext = pathinfo($slug, PATHINFO_EXTENSION);
