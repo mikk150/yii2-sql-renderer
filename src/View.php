@@ -42,7 +42,7 @@ class View extends \yii\base\View
      * on how to specify this parameter.
      * @return array the view array
      */
-    protected function findViewRow(string $view)
+    protected function findViewRow($view)
     {
         $query = (new Query())->select('*')->from($this->viewTable)->where('slug = :slug', ['slug' => $view])->one($this->db);
         return $query;
